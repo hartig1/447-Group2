@@ -11,9 +11,11 @@ def stateSelected():
         app.hideOptionBox("State")
         app.showScale("Average Household Income")
         app.showScale("Annual robberies per 100,000 people")
+        app.showScale("Distance from center of mass")
         app.hideButton("NEXT")
         app.showLabel("Income")
         app.showLabel("Robberies")
+        app.showLabel("Distance")
         app.showButton("BACK")
         app.showButton("DONE")
         app.hideLabel("Must select a state")
@@ -21,23 +23,28 @@ def returnState():
     app.showOptionBox("State")
     app.hideScale("Average Household Income")
     app.hideScale("Annual robberies per 100,000 people")
+    app.hideScale("Distance from center of mass")
     app.showButton("NEXT")
     app.hideButton("BACK")
     app.hideButton("DONE")
     app.hideLabel("Income")
     app.hideLabel("Robberies")
+    app.hideLabel("Distance")
 def inputDone():
     app.hideScale("Average Household Income")
     app.hideScale("Annual robberies per 100,000 people")
+    app.hideScale("Distance from center of mass")
     app.hideButton("BACK")
     app.showButton("EDIT")
 def returnInput():
     app.showScale("Average Household Income")
     app.showScale("Annual robberies per 100,000 people")
+    app.showScale("Distance from center of mass")
     app.showButton("BACK")
     app.hideButton("EDIT")
     app.showLabel("Income")
     app.showLabel("Robberies")
+    app.showLabel("Distance")
 def updateUserIncome():
     userIncome = app.getScale("Average Household Income")
     app.setLabel("Income","You have selected average household income: " + str(userIncome) + " which is in quintile #" + str(int((userIncome-incomeMin)/incomeInterval)+1))
@@ -45,11 +52,16 @@ def updateUserIncome():
 def updateUserRobberies():
     userRobberies = app.getScale("Annual robberies per 100,000 people")
     app.setLabel("Robberies","You have selected annual robberies per 100,000 people: " + str(userRobberies) + " which is in quintile #" + str(int((userRobberies-robberyMin)/robberyInterval)+1))
-
+def updateUserDist():
+    userDist = app.getScale("Distance from center of mass")
+    app.setLabel("Distance", "You have selected distance from center of mass(miles): " + str(userDist) + " which is in quintile #" + str(int((userDist-distMin)/distInterval)+1))
 incomeMax = 70000
 incomeMin = 40000
 robberyMax = 1000
 robberyMin = 200
+distMin = 0
+distMax = 30
+distInterval = (distMax-distMin)/4
 incomeInterval = (incomeMax-incomeMin)/4
 robberyInterval = (robberyMax-robberyMin)/4
 
@@ -90,6 +102,17 @@ app.setScaleRange("Annual robberies per 100,000 people", robberyMin, robberyMax)
 app.setScaleIncrement("Annual robberies per 100,000 people", robberyInterval)
 #app.showScaleValue("Annual robberies per 100,000 people")
 app.showScaleIntervals("Annual robberies per 100,000 people", robberyInterval)
+
+app.addLabel("Distance","You have selected distance from center of mass(miles): " + str(distMin) + " which is in quintile #1")
+app.hideLabel("Distance")
+
+app.addLabelScale("Distance from center of mass")
+app.setScaleChangeFunction("Distance from center of mass", updateUserDist)
+app.hideScale("Distance from center of mass")
+app.setScaleRange("Distance from center of mass", distMin, distMax)
+app.setScaleIncrement("Distance from center of mass", distInterval)
+#app.showScaleValue("Annual robberies per 100,000 people")
+app.showScaleIntervals("Distance from center of mass", distInterval)
 
 app.addLabel("Must select a state")
 app.hideLabel("Must select a state")
