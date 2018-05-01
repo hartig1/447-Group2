@@ -1,5 +1,5 @@
 from appJar import gui
-
+import math
 def hideStart(win):
     app.hideButton("START")
     app.showOptionBox("State")
@@ -47,14 +47,74 @@ def returnInput():
     app.showLabel("Distance")
 def updateUserIncome():
     userIncome = app.getScale("Average Household Income")
-    app.setLabel("Income","You have selected average household income: " + str(userIncome) + " which is in quintile #" + str(int((userIncome-incomeMin)/incomeInterval)+1))
+    quint = (userIncome-incomeMin)/(incomeInterval/2)
+    #print(quint)
+    if(quint == 0):
+        quint = 1
+    elif(quint == 1):
+        quint = 2
+    elif(quint == 2):
+        quint = 2
+    elif(quint == 3):
+        quint = 3
+    elif(quint == 4):
+        quint = 3
+    elif(quint == 5):
+        quint = 4
+    elif(quint == 6):
+        quint = 4
+    elif(quint == 7):
+        quint = 5
+    elif(quint == 8):
+        quint = 5
+    app.setLabel("Income","You have selected average household income: " + str(userIncome) + " which is in quintile #" + str(quint))
 
 def updateUserRobberies():
     userRobberies = app.getScale("Annual robberies per 100,000 people")
-    app.setLabel("Robberies","You have selected annual robberies per 100,000 people: " + str(userRobberies) + " which is in quintile #" + str(int((userRobberies-robberyMin)/robberyInterval)+1))
+    quint = (userRobberies-robberyMin)/(robberyInterval/2)
+    #print(quint)
+    if(quint == 0):
+        quint = 1
+    elif(quint == 1):
+        quint = 2
+    elif(quint == 2):
+        quint = 2
+    elif(quint == 3):
+        quint = 3
+    elif(quint == 4):
+        quint = 3
+    elif(quint == 5):
+        quint = 4
+    elif(quint == 6):
+        quint = 4
+    elif(quint == 7):
+        quint = 5
+    elif(quint == 8):
+        quint = 5
+    app.setLabel("Robberies","You have selected annual robberies per 100,000 people: " + str(userRobberies) + " which is in quintile #" + str(quint))
 def updateUserDist():
     userDist = app.getScale("Distance from center of mass")
-    app.setLabel("Distance", "You have selected distance from center of mass(miles): " + str(userDist) + " which is in quintile #" + str(int((userDist-distMin)/distInterval)+1))
+    quint = (userDist-distMin)/(distInterval/2)
+    #print(quint)
+    if(quint == 0):
+        quint = 1
+    elif(quint == 1):
+        quint = 2
+    elif(quint == 2):
+        quint = 2
+    elif(quint == 3):
+        quint = 3
+    elif(quint == 4):
+        quint = 3
+    elif(quint == 5):
+        quint = 4
+    elif(quint == 6):
+        quint = 4
+    elif(quint == 7):
+        quint = 5
+    elif(quint == 8):
+        quint = 5
+    app.setLabel("Distance", "You have selected distance from center of mass(miles): " + str(userDist) + " which is in quintile #" + str(quint))
 incomeMax = 70000
 incomeMin = 40000
 robberyMax = 1000
