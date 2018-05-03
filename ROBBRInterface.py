@@ -1,5 +1,5 @@
 from appJar import gui
-import math
+
 def hideStart(win):
     app.hideButton("START")
     app.showOptionBox("State")
@@ -34,6 +34,7 @@ def inputDone():
     app.hideScale("Average Household Income")
     app.hideScale("Annual robberies per 100,000 people")
     app.hideScale("Distance from center of mass")
+    app.showMap("Map")
     app.hideButton("BACK")
     app.showButton("EDIT")
 def returnInput():
@@ -45,76 +46,17 @@ def returnInput():
     app.showLabel("Income")
     app.showLabel("Robberies")
     app.showLabel("Distance")
+    app.hideMap("Map")
 def updateUserIncome():
     userIncome = app.getScale("Average Household Income")
-    quint = (userIncome-incomeMin)/(incomeInterval/2)
-    #print(quint)
-    if(quint == 0):
-        quint = 1
-    elif(quint == 1):
-        quint = 2
-    elif(quint == 2):
-        quint = 2
-    elif(quint == 3):
-        quint = 3
-    elif(quint == 4):
-        quint = 3
-    elif(quint == 5):
-        quint = 4
-    elif(quint == 6):
-        quint = 4
-    elif(quint == 7):
-        quint = 5
-    elif(quint == 8):
-        quint = 5
-    app.setLabel("Income","You have selected average household income: " + str(userIncome) + " which is in quintile #" + str(quint))
+    app.setLabel("Income","You have selected average household income: " + str(userIncome) + " which is in quintile #" + str(int((userIncome-incomeMin)/incomeInterval)+1))
 
 def updateUserRobberies():
     userRobberies = app.getScale("Annual robberies per 100,000 people")
-    quint = (userRobberies-robberyMin)/(robberyInterval/2)
-    #print(quint)
-    if(quint == 0):
-        quint = 1
-    elif(quint == 1):
-        quint = 2
-    elif(quint == 2):
-        quint = 2
-    elif(quint == 3):
-        quint = 3
-    elif(quint == 4):
-        quint = 3
-    elif(quint == 5):
-        quint = 4
-    elif(quint == 6):
-        quint = 4
-    elif(quint == 7):
-        quint = 5
-    elif(quint == 8):
-        quint = 5
-    app.setLabel("Robberies","You have selected annual robberies per 100,000 people: " + str(userRobberies) + " which is in quintile #" + str(quint))
+    app.setLabel("Robberies","You have selected annual robberies per 100,000 people: " + str(userRobberies) + " which is in quintile #" + str(int((userRobberies-robberyMin)/robberyInterval)+1))
 def updateUserDist():
     userDist = app.getScale("Distance from center of mass")
-    quint = (userDist-distMin)/(distInterval/2)
-    #print(quint)
-    if(quint == 0):
-        quint = 1
-    elif(quint == 1):
-        quint = 2
-    elif(quint == 2):
-        quint = 2
-    elif(quint == 3):
-        quint = 3
-    elif(quint == 4):
-        quint = 3
-    elif(quint == 5):
-        quint = 4
-    elif(quint == 6):
-        quint = 4
-    elif(quint == 7):
-        quint = 5
-    elif(quint == 8):
-        quint = 5
-    app.setLabel("Distance", "You have selected distance from center of mass(miles): " + str(userDist) + " which is in quintile #" + str(quint))
+    app.setLabel("Distance", "You have selected distance from center of mass(miles): " + str(userDist) + " which is in quintile #" + str(int((userDist-distMin)/distInterval)+1))
 incomeMax = 70000
 incomeMin = 40000
 robberyMax = 1000
@@ -131,8 +73,8 @@ app.setFont(12)
 app.addLabel("l1", "Welcome to ROBBR")
 app.addButtons(["START"], hideStart)
 
-states = ['- Select State -','Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware',
-    'District of Columbia','Florida','Gorgia','Hawaii','Idaho','Illinois','Indiana','Iowa',
+states = ['- Select State -','Alabama','Arizona','Arkansas','California','Colorado','Connecticut','Delaware',
+    'District of Columbia','Florida','Gorgia','Idaho','Illinois','Indiana','Iowa',
     'Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota',
     'Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico'
     ,'New York','North Carolina','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Rhode Island'
@@ -171,9 +113,20 @@ app.setScaleChangeFunction("Distance from center of mass", updateUserDist)
 app.hideScale("Distance from center of mass")
 app.setScaleRange("Distance from center of mass", distMin, distMax)
 app.setScaleIncrement("Distance from center of mass", distInterval)
-#app.showScaleValue("Annual robberies per 100,000 people")
 app.showScaleIntervals("Distance from center of mass", distInterval)
-
+app.addGoogleMap("Map")
+app.hideMap("Map")
+app.setGoogleMapSize("Map","500x500")
+app.searchGoogleMap("Map",location="1742 Morse road, Forest Hill, MD")
+app.setGoogleMapMarker("Map", location='1742 Morse road, Forerst Hill, MD', size=None, colour='blue', label='J', replace=False)
+x = app.getGoogleMapLocation("Map")
+app.setGoogleMapMarker("Map",x)
+#app.searchGoogleMap("Map",location="39.234256, -76.672231");
+#x = app.getGoogleMapLocation("Map")
+#app.setGoogleMapMarker("Map",x)
+app.searchGoogleMap("Map",location="1746 Morse Rd, Forest Hill, MD 21050")
+x = app.getGoogleMapLocation("Map")
+app.setGoogleMapMarker("Map",x)
 app.addLabel("Must select a state")
 app.hideLabel("Must select a state")
 app.hideOptionBox("State")
