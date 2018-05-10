@@ -20,26 +20,28 @@ def MapInterface(q):
         #print(row[1])
         if count < 5:
             time.sleep(.5)
-            markerLabel = 'A'
-            if count == 0:
-                markerLabel = 'A'
-            elif count == 1:
-                markerLabel = 'B'
-            elif count == 2:
-                markerLabel = 'C'
-            elif count == 3:
-                label = 'D'
-            elif markerLabel == 4:
-                label = 'E'
-            elif count == 5:
-                markerLabel = 'F'
-            elif count == 6:
-                markerLabel = 'G'
-            houses += markerLabel + ": " + row[0] + " " + row[1] + "\n"
+            # markerLabel = 'A'
+            # if count == 0:
+            #     markerLabel = 'A'
+            # elif count == 1:
+            #     markerLabel = 'B'
+            # elif count == 2:
+            #     markerLabel = 'C'
+            # elif count == 3:
+            #     label = 'D'
+            # elif markerLabel == 4:
+            #     label = 'E'
+            # elif count == 5:
+            #     markerLabel = 'F'
+            # elif count == 6:
+            #     markerLabel = 'G'
+            #houses += markerLabel + ": " + row[0] + " " + row[1] + "\n"
+            houses += row[0] + " " + row[1] + "\n"
             app.searchGoogleMap("Map", location=row[1])
             x = app.getGoogleMapLocation("Map")
             if x != None:
-                app.setGoogleMapMarker("Map",location=x, size=None, colour="red", label=markerLabel, replace=False)
+                #app.setGoogleMapMarker("Map",location=x, size=None, colour="red", label=markerLabel, replace=False)
+                app.setGoogleMapMarker("Map",location=x, replace=False)
             else:
                 print("House not found")
         else:

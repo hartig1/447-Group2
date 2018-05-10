@@ -1,7 +1,7 @@
 #from ROBBRInterface import *
 from StateGUI import *
 from Query import *
-from test2 import *
+from stateNameConverter import *
 def main():
     file = open("combined.csv", "w")
     file.write("")
@@ -21,15 +21,17 @@ def main():
     state = stateGUI()
     print("Please wait gathering zips")
     q = Query(state)
-    q.popZipDict()
     #print(q.min_income)
-    test()
+    stateNameConverter()
     from QuintileGUI import *
     quintiles = QuintileGUI(q.min_income,q.max_income,q.min_crime,q.max_crime,25,100)
+    print(quintiles)
     #return income then crime then dist
     from WeightGUI import *
     q.setSelectedCrime(quintiles[2],quintiles[3])
     q.setSelectedIncome(quintiles[0],quintiles[1])
+    q.setSelectedDist(quintiles[4], quintiles[5])
+    q.popZipDict()
     q.filter()
     q.findHouses()
     #pause()

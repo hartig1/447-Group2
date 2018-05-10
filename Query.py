@@ -22,9 +22,12 @@ class Query:
         self.state = state
         self.zip_dict = {}
         self.zip_to_state = {}
+        self.filterZips = []
         self.zipToState()
         self.getCrimeBounds()
         self.getIncBounds()
+        self.getDistBounds()
+
     def getIncBounds(self):
         with open("stateMinMaxIncs.csv", "rb") as incomeFile:
             reader = csv.reader(incomeFile, delimiter=",")
@@ -40,6 +43,9 @@ class Query:
                 if row[0] == self.state:
                     self.min_crime = float(row[1])
                     self.max_crime = float(row[2])
+    def getDistBounds(self):
+        self.min_dist = 25
+        self.max_dist = 100
 
     def zipToState(self):
         file = open("zipState.csv", 'r')
@@ -50,40 +56,53 @@ class Query:
         file.close()
     # populates zip_dict, which is a dictionary of considered zip codes
     def popZipDict(self):
-        file = open("zipStates.csv")
-        reader = csv.reader(file,delimiter=',')
-        for row in reader:
-            if(row[1] == self.state):
-                out_file = open("combined.csv", 'a')
-                writer = csv.writer(out_file)
-                writer.writerow([row[0],row[1]])
-                out_file.close()
+        for index in range(1 + self.income_min + self.income_max):
+            try:
+                with open("States/" + self.state + "Q" + str(index + self.income_min) + ".csv", "r") as file:
+                    reader = csv.reader(file,delimiter=',')
+                    for row in reader:
+                        zipDict[row[0]] = Zip(row[1], row[2])
+            except:
+                file = open("zipStates.csv")
+                reader = csv.reader(file,delimiter=',')
+                for row in reader:
+                    if(row[1] == self.state):
+                        out_file = open("combined.csv", 'a')
+                        writer = csv.writer(out_file)
+                        writer.writerow([row[0],row[1]])
+                        out_file.close()
     def filter(self):
-        file = open("AGI.csv", "r")
-        reader = csv.reader(file, delimiter=",")
-        for row in reader:
-            #print(row)
-            if(row[0] == "state"):
-                continue
-            if(int(row[2]) >= self.income_lower and int(row[2]) <= self.income_upper and row[0] == self.state):
-                #print("found")
-                out_file = open("incomeSorted.csv", 'a')
-                writer = csv.writer(out_file)
-                writer.writerow([row[1], row[2]])
-                out_file.close()
-        file.close()
-        file = open("incomeSorted.csv","r")
-        reader = csv.reader(file,delimiter=",")
-        for row in reader:
-            file2 = open("filteredCrimeData.csv","rU")
-            reader2 = csv.reader(file2,delimiter=",")
-            for row2 in reader2:
-                if(float(row2[1]) >= self.crime_lower and float(row2[1]) <= self.crime_upper and int(row2[0]) == int(row[0])):
-                    #print("found")
-                    out_file = open("crimeSorted.csv","a")
-                    writer = csv.writer(out_file)
-                    writer.writerow([row[0],row[1],row2[1]])
-                    out_file.close()
+        try:
+            for zip_code in zipDict:
+                if zipDict[zip_code].crime >= self.crime_lower and zipDict[zip_code].crime <= self.crime_upper and zipDict[zip_code].jew_dist >= self.dist_lower and zipDict[zip_code].jew_dist <= self.dist_upper:
+                    self.filterZips.append(zip_code)
+        except:
+            file = open("AGI.csv", "r")
+            reader = csv.reader(file, delimiter=",")
+            for row in reader:
+                #print(row)
+                if(row[0] == "state"):
+                    continue
+                if(int(row[2]) >= self.income_lower and int(row[2]) <= self.income_upper and row[0] == self.state):
+                     #print("found")
+                     out_file = open("incomeSorted.csv", 'a')
+                     writer = csv.writer(out_file)
+                     writer.writerow([row[1], row[2]])
+                     out_file.close()
+            file.close()
+            file = open("incomeSorted.csv","r")
+            reader = csv.reader(file,delimiter=",")
+            for row in reader:
+                file2 = open("filteredCrimeData.csv","rU")
+                reader2 = csv.reader(file2,delimiter=",")
+                for row2 in reader2:
+                    if(float(row2[1]) >= self.crime_lower and float(row2[1]) <= self.crime_upper and int(row2[0]) == int(row[0])):
+                         #print("found")
+                        out_file = open("crimeSorted.csv","a")
+                        writer = csv.writer(out_file)
+                        writer.writerow([row[0],row[1],row2[1]])
+                        out_file.close()
+                    
     def findHouses(self):
         path = os.getcwd()
         file = open("crimeSorted.csv","r")
@@ -106,8 +125,47 @@ class Query:
                     break
             else:
                 print("No such path: " + three_directory + current_zip + "Housing.csv")
-
-        file.close()
+        # if not self.filterZips:
+        #     for zip in self.filterZips:
+        #         current_zip = zip
+        #         #print(current_zip)
+        #         two_directory = path + "/" + "House Folder" + "/" + current_zip[:2] + "/"
+        #         three_directory = two_directory + current_zip[:3] + "/"
+        #         #print(three_directory)
+        #         if(os.path.exists(three_directory + current_zip + "Housing.csv")):
+        #             file2 = open(three_directory + current_zip + "Housing.csv", "r")
+        #             reader2 = csv.reader(file2,delimiter=",")
+        #             for row2 in reader2:
+        #                 out_file = open("houses.csv","a")
+        #                 writer = csv.writer(out_file)
+        #                 writer.writerow([row2[0],row2[1]])
+        #                 out_file.close()
+        #                 break
+        #         else:
+        #             print("No such path: " + three_directory + current_zip + "Housing.csv")
+        # else:
+        # path = os.getcwd()
+        # file = open("crimeSorted.csv","r")
+        # reader = csv.reader(file,delimiter=",")
+        # for row in reader:
+        #     #print(row)
+        #     current_zip = row[0].zfill(5)
+        #     #print(current_zip)
+        #     two_directory = path + "/" + "House Folder" + "/" + current_zip[:2] + "/"
+        #     three_directory = two_directory + current_zip[:3] + "/"
+        #     #print(three_directory)
+        #     if(os.path.exists(three_directory + current_zip + "Housing.csv")):
+        #         file2 = open(three_directory + current_zip + "Housing.csv", "r")
+        #         reader2 = csv.reader(file2,delimiter=",")
+        #         for row2 in reader2:
+        #             out_file = open("houses.csv","a")
+        #             writer = csv.writer(out_file)
+        #             writer.writerow([row2[0],row2[1]])
+        #             out_file.close()
+        #             break
+        #     else:
+        #         print("No such path: " + three_directory + current_zip + "Housing.csv")
+        #     file.close()
     # def weighZips(self):
     def getCOM(self):
         file = open("jewCOM_MD.csv","r")
@@ -123,6 +181,14 @@ class Query:
         self.COMLong = long/count
         print(self.COMLat)
         print(self.COMLong)
+        # with open("JewCOM.csv", "rb") as jew_COM:
+        #     com_Data = csv.reader(jew_COM, delimiter=",")
+        #     print(com_Data)
+        #     for row in com_Data:
+        #         if row[0] == self.state:
+        #             print(row[1] + ", " + row[2])
+        #             return row[1], row[2]
+
     def setSelectedCrime(self, min, max):
         self.crime_min = min
         self.crime_max = max
@@ -157,6 +223,42 @@ class Query:
         else:
             print("Bad max")
             print(self.crime_max)
+        #print(self.crime_lower)
+        #print(self.crime_upper)
+    def setSelectedDist(self, min, max):
+        self.dist_min = min
+        self.dist_max = max
+        self.distQ1 = self.min_dist + 0*(self.max_dist-self.min_dist)/5
+        self.distQ2 = self.min_dist + 1*(self.max_dist-self.min_dist)/5
+        self.distQ3 = self.min_dist + 2*(self.max_dist-self.min_dist)/5
+        self.distQ4 = self.min_dist + 3*(self.max_dist-self.min_dist)/5
+        self.distQ5 = self.min_dist + 4*(self.max_dist-self.min_dist)/5
+        if(self.dist_min == 1):
+            self.dist_lower = self.distQ1
+        elif(self.dist_min == 2):
+            self.dist_lower = self.distQ2
+        elif(self.dist_min == 3):
+            self.dist_lower = self.distQ3
+        elif(self.dist_min == 4):
+            self.dist_lower = self.distQ4
+        elif(self.dist_min == 5):
+            self.dist_lower = self.distQ5
+        else:
+            print("Bad min")
+            print(self.dist_min)
+        if(self.dist_max == 1):
+            self.dist_upper = self.distQ2
+        elif(self.dist_max == 2):
+            self.dist_upper = self.distQ3
+        elif(self.dist_max == 3):
+            self.dist_upper = self.distQ4
+        elif(self.dist_max == 4):
+            self.dist_upper = self.distQ5
+        elif(self.dist_max == 5):
+            self.dist_upper = self.max_dist
+        else:
+            print("Bad max")
+            print(self.dist_max)
         #print(self.crime_lower)
         #print(self.crime_upper)
     def setSelectedIncome(self, min, max):
@@ -211,7 +313,7 @@ class Query:
         self.max_crime = max_crime
 
     def setMinJewDist(self, min_jew_dist):
-        self.min_jew_dist = min_jew_dist
+        self.min_dist = min_jew_dist
 
     def setMaxJewDist(self, max_jew_dist):
-        self.max_jew_dist = max_jew_dist
+        self.max_dist = max_jew_dist
