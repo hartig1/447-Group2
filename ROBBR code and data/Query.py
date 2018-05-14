@@ -96,13 +96,15 @@ class Query:
                 file2 = open("filteredCrimeData.csv","rU")
                 reader2 = csv.reader(file2,delimiter=",")
                 for row2 in reader2:
-                    if(float(row2[1]) >= self.crime_lower and float(row2[1]) <= self.crime_upper and int(row2[0]) == int(row[0])):
-                         #print("found")
-                        out_file = open("crimeSorted.csv","a")
-                        writer = csv.writer(out_file)
-                        writer.writerow([row[0],row[1],row2[1]])
-                        out_file.close()
-                    
+                    try:
+                        if(float(row2[1]) >= self.crime_lower and float(row2[1]) <= self.crime_upper and int(row2[0]) == int(row[0])):
+                             #print("found")
+                            out_file = open("crimeSorted.csv","a")
+                            writer = csv.writer(out_file)
+                            writer.writerow([row[0],row[1],row2[1]])
+                            out_file.close()
+                    except:
+                        continue
     def findHouses(self):
         path = os.getcwd()
         file = open("crimeSorted.csv","r")
